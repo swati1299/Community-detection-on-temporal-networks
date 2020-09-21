@@ -48,7 +48,7 @@ class RDyn(object):
         self.count = 0
 
     def execute(self, simplified=True):
-        # execution code
+        # execution of the code
         print(simplified)
 
     def __add_node(self):
