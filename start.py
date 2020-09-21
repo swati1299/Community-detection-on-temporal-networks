@@ -87,6 +87,15 @@ class RDyn(object):
             nodes = set(self.communities[cid])
             self.communities[cid] = list(nodes - {nid})
             self.graph.remove_node(nid)   
+    def __get_nodes(self):
+        if len(self.communities_involved) == 0:
+            return self.graph.nodes()
+        else:
+            nodes = {}
+            for cid in self.communities_involved:
+                for nid in self.communities[cid]:
+                    nodes[nid] = None
+            return list(nodes.keys())        
         
         
 if __name__ == '__main__':
