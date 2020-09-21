@@ -52,6 +52,8 @@ class RDyn(object):
         # execution  code
         print(simplified)
 
+    
+    
     def __add_node(self):
         nid = self.size
         self.graph.add_node(nid)
@@ -64,6 +66,28 @@ class RDyn(object):
             deg = 1
         self.exp_node_degs.append(deg)
         self.size += 1
+        
+    def __remove_node(self):
+        com_sel = [c for c, v in future.utils.iteritems(self.communities) if len(v) > 3]
+        if len(com_sel) > 0:
+            cid = random.sample(com_sel, 1)[0]
+            s = self.graph.subgraph(self.communities[cid])
+            sd = dict(s.degree)
+            min_value = min(sd.values())
+            candidates = [k for k in sd if sd[k] == min_value]
+            nid = random.sample(candidates, 1)[0]
+            eds = list(self.graph.edges([nid]))
+            for e in eds:
+                self.count += 1
+                self.out_interactions.write("%s\t%s\t-\t%s\t%s\n" % (self.it, self.count, e[0], e[1]))
+                self.graph.remove_edge(e[0], e[1])
+
+            self.exp_node_degs[nid] = 0
+            self.node_to_com[nid] = -1
+            nodes = set(self.communities[cid])
+            self.communities[cid] = list(nodes - {nid})
+            self.graph.remove_node(nid)   
+        
         
 if __name__ == '__main__':
     print("enter size, iterations, avg_deg, sigma, lambdad, alpha, paction, prenewal, quality_threshold, new_node, del_node, max_evts:\n")
