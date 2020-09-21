@@ -47,11 +47,23 @@ class RDyn(object):
         self.it = 0
         self.count = 0
 
+    
     def execute(self, simplified=True):
         # execution  code
         print(simplified)
 
-    
+    def __add_node(self):
+        nid = self.size
+        self.graph.add_node(nid)
+        cid = random.sample(list(self.communities.keys()), 1)[0]
+        self.communities[cid].append(nid)
+        self.node_to_com.append(cid)
+        deg = random.sample(range(2, int((len(self.communities[cid])-1) +
+                                  (len(self.communities[cid])-1)*(1-self.sigma))), 1)[0]
+        if deg == 0:
+            deg = 1
+        self.exp_node_degs.append(deg)
+        self.size += 1
         
 if __name__ == '__main__':
     print("enter size, iterations, avg_deg, sigma, lambdad, alpha, paction, prenewal, quality_threshold, new_node, del_node, max_evts:\n")
