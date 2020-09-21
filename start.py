@@ -99,15 +99,7 @@ class RDyn(object):
                     nodes[nid] = None
             return list(nodes.keys())        
        
-    def __get_vanished_edges(self, n):
-        removal = []
-        node_neighbors = nx.all_neighbors(self.graph, n)
-        if len(self.communities) >= nx.number_connected_components(self.graph):
-            for n1 in node_neighbors:
-                delay = self.graph.get_edge_data(n, n1)['d']
-                if delay == self.it:
-                    removal.append(n1)
-        return removal    
+    
 if __name__ == '__main__':
     print("enter size, iterations, avg_deg, sigma, lambdad, alpha, paction, prenewal, quality_threshold, new_node, del_node, max_evts:\n")
     size, iterations, avg_deg, sigma, lambdad, alpha, paction, prenewal, quality_threshold, new_node, del_node, max_evts = map(float, input().split())
