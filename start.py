@@ -1,6 +1,7 @@
 import os
 import networkx as nx
-
+import random
+import future.utils
 class RDyn(object):
     def __init__(self, size=1000, iterations=100, avg_deg=15, sigma=.6,
                  lambdad=1, alpha=2.5, paction=1, prenewal=.8,
