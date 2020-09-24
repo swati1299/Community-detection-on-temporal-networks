@@ -51,6 +51,7 @@ class RDyn(object):
 
     
     def __add_node(self):
+        #node emerges
         nid = self.size
         self.graph.add_node(nid)
         cid = random.sample(list(self.communities.keys()), 1)[0]
@@ -64,6 +65,7 @@ class RDyn(object):
         self.size += 1
         
     def __remove_node(self):
+        #node vanishes
         com_sel = [c for c, v in future.utils.iteritems(self.communities) if len(v) > 3]
         if len(com_sel) > 0:
             cid = random.sample(com_sel, 1)[0]
@@ -86,6 +88,7 @@ class RDyn(object):
 
 
     def __get_nodes(self):
+        #all vertices of the graph
         if len(self.communities_involved) == 0:
             return self.graph.nodes()
         else:
@@ -94,10 +97,20 @@ class RDyn(object):
                 for nid in self.communities[cid]:
                     nodes[nid] = None
             return list(nodes.keys())        
-    
+    def __get_vanished_edges(self,node):
+        #deleted edges of node 'node'
+        edges=[]
+        neighbors=nx.all_neighbors(self.graph,node)
+        if len(self.communities)>= nx.number_connected_components(self.graph):
+            for neighbor in neighbors:
+                delay=self.graph.get_edge_data(node,neighbor)['d']
+                if delay==self.it:
+                    edges.append(neighbor)
+        return edges
+
     def execute(self, simplified=True):
-        # execution  code
-        print(simplified)
+        #start the algo
+        print("TBD")
 
     
 if __name__ == '__main__':
