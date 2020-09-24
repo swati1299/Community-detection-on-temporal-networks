@@ -2,6 +2,7 @@ import os
 import networkx as nx
 import random
 import future.utils
+import argparse
 class RDyn(object):
     def __init__(self, size=1000, iterations=100, avg_deg=15, sigma=.6,
                  lambdad=1, alpha=2.5, paction=1, prenewal=.8,
@@ -49,12 +50,6 @@ class RDyn(object):
         self.count = 0
 
     
-    def execute(self, simplified=True):
-        # execution  code
-        print(simplified)
-
-    
-    
     def __add_node(self):
         nid = self.size
         self.graph.add_node(nid)
@@ -99,17 +94,31 @@ class RDyn(object):
                 for nid in self.communities[cid]:
                     nodes[nid] = None
             return list(nodes.keys())        
-       
+    
+    def execute(self, simplified=True):
+        # execution  code
+        print(simplified)
+
     
 if __name__ == '__main__':
-    print("enter size, iterations, avg_deg, sigma, lambdad, alpha, paction, prenewal, quality_threshold, new_node, del_node, max_evts:\n")
-    size, iterations, avg_deg, sigma, lambdad, alpha, paction, prenewal, quality_threshold, new_node, del_node, max_evts = map(float, input().split())
-    rdyn= RDyn(size=size, iterations=iterations, avg_deg=avg_deg,
-                sigma=sigma, lambdad=lambdad, alpha=alpha, paction=paction,
-                prenewal=prenewal, quality_threshold=quality_threshold,
-                new_node=new_node, del_node=del_node, max_evts=max_evts)
-    #execution function of algo to be called
-    print("enter boolean value for simplified: \n")
-    simplified= input()
-    rdyn.execute(simplified= simplified)
+    argset = argparse.ArgumentParser()
+    argset.add_argument('size', type=int, help='Number of nodes', default=1000)
+    argset.add_argument('iterations', type=int, help='Number of iterations', default=1000)
+    argset.add_argument('simplified', type=bool, help='Simplified execution', default=True)
+    argset.add_argument('-d', '--avg_degree', type=int, help='Average node degree', default=15)
+    argset.add_argument('-s', '--sigma', type=float, help='Sigma', default=0.7)
+    argset.add_argument('-l', '--lbd', type=float, help='Lambda community size distribution', default=1)
+    argset.add_argument('-a', '--alpha', type=int, help='Alpha degree distribution', default=2.5)
+    argset.add_argument('-p', '--prob_action', type=float, help='Probability of node action', default=1)
+    argset.add_argument('-r', '--prob_renewal', type=float, help='Probability of edge renewal', default=0.8)
+    argset.add_argument('-q', '--quality_threshold', type=float, help='Conductance quality threshold', default=0.3)
+    argset.add_argument('-n', '--new_nodes', type=float, help='Probability of node appearance', default=0)
+    argset.add_argument('-j', '--delete_nodes', type=float, help='Probability of node vanishing', default=0)
+    argset.add_argument('-e', '--max_events', type=int, help='Max number of community events for stable iteration', default=1)
 
+    arguments = argset.parse_args()
+    rdyn = RDyn(size=arguments.size, iterations=arguments.iterations, avg_deg=arguments.avg_degree,
+                sigma=arguments.sigma, lambdad=arguments.lbd, alpha=arguments.alpha, paction=arguments.prob_action,
+                prenewal=arguments.prob_renewal, quality_threshold=arguments.quality_threshold,
+                new_node=arguments.new_nodes, del_node=arguments.delete_nodes, max_evts=arguments.max_events)
+    rdyn.execute(simplified=arguments.simplified)

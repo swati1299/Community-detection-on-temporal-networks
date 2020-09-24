@@ -1,2 +1,3 @@
 networkx==2.5
 numpy==1.19.2
+future==0.18.2
