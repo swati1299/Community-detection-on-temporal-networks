@@ -137,7 +137,7 @@ class RDyn(object):
                 self.__add_node()
             
             #all nodes in communities
-            nodes-self.__get_nodes()
+            nodes=self.__get_nodes()
 
             #for all nodes
             for node in nodes:
