@@ -1,6 +1,6 @@
 import os
 import networkx as nx
-import random
+import random as rd
 import future.utils
 import argparse
 class RDyn(object):
@@ -54,10 +54,10 @@ class RDyn(object):
         #node emerges
         nid = self.size
         self.graph.add_node(nid)
-        cid = random.sample(list(self.communities.keys()), 1)[0]
+        cid = rd.sample(list(self.communities.keys()), 1)[0]
         self.communities[cid].append(nid)
         self.node_to_com.append(cid)
-        deg = random.sample(range(2, int((len(self.communities[cid])-1) +
+        deg = rd.sample(range(2, int((len(self.communities[cid])-1) +
                                   (len(self.communities[cid])-1)*(1-self.sigma))), 1)[0]
         if deg == 0:
             deg = 1
@@ -68,12 +68,12 @@ class RDyn(object):
         #node vanishes
         com_sel = [c for c, v in future.utils.iteritems(self.communities) if len(v) > 3]
         if len(com_sel) > 0:
-            cid = random.sample(com_sel, 1)[0]
+            cid = rd.sample(com_sel, 1)[0]
             s = self.graph.subgraph(self.communities[cid])
             sd = dict(s.degree)
             min_value = min(sd.values())
             candidates = [k for k in sd if sd[k] == min_value]
-            nid = random.sample(candidates, 1)[0]
+            nid = rd.sample(candidates, 1)[0]
             eds = list(self.graph.edges([nid]))
             for e in eds:
                 self.count += 1
@@ -110,7 +110,46 @@ class RDyn(object):
 
     def execute(self, simplified=True):
         #start the algo
-        print("TBD")
+        # generate degree sequence (allot degrees to nodes)
+        self.__get_degree_seq()
+        # generate community size distrib (allot sizes to communities)
+        allot_com_size=self.__distrib_community_size()
+        # make the initial node assignments according to community sizes
+        self.__allot_initial_nodes()
+
+        #iterations start here
+        for self.it in range(0,self.iterations):
+            #community checks if cool generate event
+            disjoint_parts=nx.number_connected_components(self.graph)
+            if disjoint_parts<=len(self.communities):
+                #check test
+                if self.__check_test():
+                    self.__generate_event(simplified)
+            
+            #node vanishing if probability
+            ar=rd.random()
+            if ar<self.del_node:
+                self.__remove_node()
+            
+            #node creation if probability
+            ar=rd.random()
+            if ar<self.new_node:
+                self.__add_node()
+            
+            #all nodes in communities
+            nodes-self.__get_nodes()
+
+            #for all nodes
+            for node in nodes:
+                #if deleted remove it
+                if self.node_to_com[node]==-1:
+                    continue
+                #get vanished edges
+                vanished=self.__get_vanished_edges(node)
+                #removal phase
+            
+
+
 
     
 if __name__ == '__main__':
