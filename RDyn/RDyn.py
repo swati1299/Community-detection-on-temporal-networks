@@ -524,10 +524,16 @@ if __name__ == '__main__':
     argset.add_argument('-n', '--new_nodes', type=float, help='Probability of node appearance', default=0)
     argset.add_argument('-j', '--delete_nodes', type=float, help='Probability of node vanishing', default=0)
     argset.add_argument('-e', '--max_events', type=int, help='Max number of community events for stable iteration', default=1)
+    argset.add_argument('-y', '--year', type=int, help='Start Year', default=2015)
+    argset.add_argument('-m', '--month', type=int, help='Start Month', default=1)
+    argset.add_argument('-D', '--day', type=int, help='Start Day', default=1)
+    argset.add_argument('-H', '--hour', type=int, help='Start Hour', default=1)
+    argset.add_argument('-M', '--minutes', type=int, help='Start Minutes', default=23)
+    argset.add_argument('-S', '--seconds', type=int, help='Start seconds', default=25)
 
     arguments = argset.parse_args()
     rdyn = RDyn(size=arguments.size, iterations=arguments.iterations, avg_deg=arguments.avg_degree,
                 sigma=arguments.sigma, lambdad=arguments.lbd, alpha=arguments.alpha, paction=arguments.prob_action,
                 prenewal=arguments.prob_renewal, quality_threshold=arguments.quality_threshold,
-                new_node=arguments.new_nodes, del_node=arguments.delete_nodes, max_evts=arguments.max_events)
+                new_node=arguments.new_nodes, del_node=arguments.delete_nodes, max_evts=arguments.max_events, year=arguments.year, month=arguments.month, day=arguments.day, hour=arguments.hour, minutes=arguments.minutes, seconds=arguments.seconds)
     rdyn.execute(simplified=arguments.simplified)
