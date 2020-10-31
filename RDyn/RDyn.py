@@ -6,10 +6,11 @@ import random
 import tqdm
 import future.utils
 import six
+import datetime as dt
 class RDyn(object):
     def __init__(self, size=1000, iterations=100, avg_deg=15, sigma=.6,
                  lambdad=1, alpha=2.5, paction=1, prenewal=.8,
-                 quality_threshold=.2, new_node=.0, del_node=.0, max_evts=1):
+                 quality_threshold=.2, new_node=.0, del_node=.0, max_evts=1, year=2015, month=1, day=1, hour=1, minutes=23, seconds=25):
 
         # set the network generator parameters
         self.size = size
@@ -26,6 +27,14 @@ class RDyn(object):
 
         # event targets
         self.communities_involved = []
+        
+        #date and time
+        self.year=year
+        self.month=month
+        self.day=day
+        self.hour=hour
+        self.minutes=minutes
+        self.seconds=seconds
 
         # initialize communities data structures
         self.communities = {}
@@ -47,6 +56,7 @@ class RDyn(object):
 
         self.out_interactions = open(str(self.output_dir)+str(os.sep)+"interactions.txt", "w")
         self.out_events = open(str(self.output_dir)+str(os.sep)+"events.txt", "w")
+        self.timed=open(str(self.output_dir)+str(os.sep)+"timed.txt","w")
         self.stable = 0
 
         self.it = 0
@@ -72,6 +82,9 @@ class RDyn(object):
         # Edge insertion
         if target is not None and not self.graph.has_edge(n, target) and target != n:
             self.graph.add_edge(n, target, d=timeout)
+            self.update_datetime()
+            tmstmp=dt.datetime(self.year,self.month,self.day,self.hour,self.minutes,self.seconds)
+            self.timed.write("%s\t%s\t%s\n" % (n, target, int(tmstmp.timestamp())))
             self.count += 1
             self.out_interactions.write("%s\t%s\t+\t%s\t%s\n" % (self.it, self.count, n, target))
 
@@ -96,10 +109,23 @@ class RDyn(object):
             if self.graph.has_node(target) and not self.graph.has_edge(n, target):
                 # Interaction exponential decay
                 timeout = (self.it + 1) + int(random.expovariate(self.lambdad))
+                self.update_datetime()
+                tmstmp=dt.datetime(self.year,self.month,self.day,self.hour,self.minutes,self.seconds)
+                self.timed.write("%s\t%s\t%s\n" % (n, target, int(tmstmp.timestamp())))
                 self.graph.add_edge(n, target, d=timeout)
                 self.count += 1
                 self.out_interactions.write("%s\t%s\t+\t%s\t%s\n" % (self.it, self.count, n, target))
-
+    def update_datetime(self):
+        timdel=dt.timedelta(days=random.randint(0,6),hours=random.randint(0,23),minutes=random.randint(0,59),seconds=random.randint(0,59))
+        tmstmp=dt.datetime(self.year,self.month,self.day,self.hour,self.minutes,self.seconds)
+        tmstmp+=timdel
+        self.year=tmstmp.year
+        self.month=tmstmp.month
+        self.day=tmstmp.day
+        self.hour=tmstmp.hour
+        self.minutes=tmstmp.minute
+        self.seconds=tmstmp.second
+    
     def __compute_degree_sequence(self):
         minv = float(self.avg_deg) / (2 ** (1 / (self.exponent - 1)))
         s = [2]
@@ -478,6 +504,8 @@ class RDyn(object):
         self.out_interactions.close()
         self.out_events.flush()
         self.out_events.close()
+        self.timed.flush()
+        self.timed.close()
         return self.stable
 
     
